@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   Clock,
   List,
+  Bot,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -24,6 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { VideoAIChat } from "@/components/video/VideoAIChat";
 
 interface VideoPlayerPageProps {
   onNavigate: (page: string) => void;
@@ -57,6 +59,7 @@ export function VideoPlayerPage({
   const [showNotes, setShowNotes] = useState(false);
   const [notes, setNotes] = useState("");
   const [showChapters, setShowChapters] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -309,6 +312,16 @@ export function VideoPlayerPage({
                     <MessageSquare className="h-5 w-5" />
                   </Button>
 
+                  {/* AI Chat */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowAIChat(!showAIChat)}
+                    className={showAIChat ? "bg-accent" : ""}
+                  >
+                    <Bot className="h-5 w-5" />
+                  </Button>
+
                   {/* Fullscreen */}
                   <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
                     <Maximize className="h-5 w-5" />
@@ -381,6 +394,13 @@ export function VideoPlayerPage({
             </div>
           </motion.div>
         )}
+
+        {/* AI Chat Sidebar */}
+        <VideoAIChat
+          isOpen={showAIChat}
+          onClose={() => setShowAIChat(false)}
+          courseTitle={courseTitle}
+        />
       </div>
     </div>
   );
