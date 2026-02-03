@@ -8,7 +8,11 @@ import { MistakesPage } from "@/pages/MistakesPage";
 import { AIPage } from "@/pages/AIPage";
 import { AdminPage } from "@/pages/AdminPage";
 import { SettingsPage } from "@/pages/SettingsPage";
-import { getSupabaseClient, getSupabaseConfigStatus } from "@/integrations/supabase/client";
+import { VideoPlayerPage } from "@/pages/VideoPlayerPage";
+import {
+  getSupabaseClient,
+  getSupabaseConfigStatus,
+} from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { isAdmin } from "@/lib/authz";
 import { Card } from "@/components/ui/card";
@@ -24,6 +28,11 @@ const pageConfig: Record<string, { title: string; subtitle?: string }> = {
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState("home");
+  const [selectedCourse, setSelectedCourse] = useState<{
+    id?: string;
+    title?: string;
+    videoUrl?: string;
+  } | null>(null);
   const { toast } = useToast();
 
   const supabaseConfig = getSupabaseConfigStatus();
@@ -48,7 +57,9 @@ const Index = () => {
     );
   }
 
-  const handleNavigate = async (page: string) => {
+  const config = pageConfig[currentPage] || pageConfig.home;
+
+  const handleNavigate = async (page: string, courseData?: any) => {
     if (page === "admin") {
       const supabase = getSupabaseClient();
       if (!supabase) return;
@@ -80,9 +91,10 @@ const Index = () => {
     }
 
     setCurrentPage(page);
+    if (page === "video" && courseData) {
+      setSelectedCourse(courseData);
+    }
   };
-
-  const config = pageConfig[currentPage] || pageConfig.home;
 
   const renderPage = () => {
     switch (currentPage) {
@@ -100,14 +112,23 @@ const Index = () => {
         return <SettingsPage onNavigate={handleNavigate} />;
       case "admin":
         return <AdminPage />;
+      case "video":
+        return (
+          <VideoPlayerPage
+            onNavigate={handleNavigate}
+            courseId={selectedCourse?.id}
+            courseTitle={selectedCourse?.title}
+            videoUrl={selectedCourse?.videoUrl}
+          />
+        );
       default:
         return <HomePage onNavigate={handleNavigate} />;
     }
   };
 
-  // Admin page has its own layout
-  if (currentPage === "admin") {
-    return <AdminPage />;
+  // Admin and Video pages have their own layout
+  if (currentPage === "admin" || currentPage === "video") {
+    return renderPage();
   }
 
   return (
