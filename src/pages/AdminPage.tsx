@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { isAdmin } from "@/lib/authz";
 
 const mockVideos = [
   {
@@ -46,6 +47,44 @@ const mockVideos = [
 export function AdminPage() {
   const [videos, setVideos] = useState(mockVideos);
   const { toast } = useToast();
+  const [allowed, setAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    isAdmin().then((ok) => {
+      if (mounted) setAllowed(ok);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (allowed === null) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-2xl mx-auto p-8">
+          <div className="bg-card rounded-2xl border border-border shadow-card p-6">
+            <p className="text-muted-foreground">正在校验权限...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (allowed === false) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="max-w-2xl mx-auto p-8">
+          <div className="bg-card rounded-2xl border border-border shadow-card p-6">
+            <h1 className="text-2xl font-bold text-foreground">无权限</h1>
+            <p className="text-muted-foreground mt-2">
+              当前账号没有后台管理权限。请在“设置”里登录管理员账号，或在数据库为该用户分配 admin 角色。
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleUpload = () => {
     toast({

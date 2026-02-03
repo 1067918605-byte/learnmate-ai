@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import { NavItem } from "@/components/ui/NavItem";
+import { getSupabaseClient } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import {
   Home,
   BookOpen,
@@ -25,6 +27,8 @@ const navItems = [
 ];
 
 export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
+  const { toast } = useToast();
+
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
       {/* Logo */}
@@ -65,7 +69,29 @@ export function Sidebar({ currentPage, onNavigate }: SidebarProps) {
         <NavItem
           icon={LogOut}
           label="退出登录"
-          onClick={() => {}}
+          onClick={async () => {
+            const supabase = getSupabaseClient();
+            if (!supabase) {
+              toast({
+                title: "未配置 Supabase",
+                description: "请先在 .env.local 配置 VITE_SUPABASE_URL 等变量。",
+                variant: "destructive",
+              });
+              return;
+            }
+
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+              toast({
+                title: "退出失败",
+                description: error.message,
+                variant: "destructive",
+              });
+              return;
+            }
+            toast({ title: "已退出登录" });
+            onNavigate("home");
+          }}
         />
       </div>
     </aside>
