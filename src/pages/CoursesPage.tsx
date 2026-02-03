@@ -72,7 +72,7 @@ const courses = [
 ];
 
 interface CoursesPageProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: string, data?: any) => void;
 }
 
 export function CoursesPage({ onNavigate }: CoursesPageProps) {
@@ -114,7 +114,11 @@ export function CoursesPage({ onNavigate }: CoursesPageProps) {
               >
                 <CourseCard
                   {...course}
-                  onClick={() => onNavigate("video")}
+                  onClick={() => onNavigate("video", {
+                    id: course.id,
+                    title: course.title,
+                    videoUrl: undefined, // Will be fetched from database
+                  })}
                 />
               </motion.div>
             ))}

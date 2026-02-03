@@ -7,6 +7,7 @@ import { ExamsPage } from "@/pages/ExamsPage";
 import { MistakesPage } from "@/pages/MistakesPage";
 import { AIPage } from "@/pages/AIPage";
 import { AdminPage } from "@/pages/AdminPage";
+import { VideoPlayerPage } from "@/pages/VideoPlayerPage";
 
 const pageConfig: Record<string, { title: string; subtitle?: string }> = {
   home: { title: "首页", subtitle: "欢迎回来，小明！" },
@@ -19,36 +20,57 @@ const pageConfig: Record<string, { title: string; subtitle?: string }> = {
 
 const Index = () => {
   const [currentPage, setCurrentPage] = useState("home");
+  const [selectedCourse, setSelectedCourse] = useState<{
+    id?: string;
+    title?: string;
+    videoUrl?: string;
+  } | null>(null);
 
   const config = pageConfig[currentPage] || pageConfig.home;
+
+  const handleNavigate = (page: string, courseData?: any) => {
+    setCurrentPage(page);
+    if (page === "video" && courseData) {
+      setSelectedCourse(courseData);
+    }
+  };
 
   const renderPage = () => {
     switch (currentPage) {
       case "home":
-        return <HomePage onNavigate={setCurrentPage} />;
+        return <HomePage onNavigate={handleNavigate} />;
       case "courses":
-        return <CoursesPage onNavigate={setCurrentPage} />;
+        return <CoursesPage onNavigate={handleNavigate} />;
       case "exams":
-        return <ExamsPage onNavigate={setCurrentPage} />;
+        return <ExamsPage onNavigate={handleNavigate} />;
       case "mistakes":
-        return <MistakesPage onNavigate={setCurrentPage} />;
+        return <MistakesPage onNavigate={handleNavigate} />;
       case "ai":
-        return <AIPage onNavigate={setCurrentPage} />;
+        return <AIPage onNavigate={handleNavigate} />;
       case "admin":
         return <AdminPage />;
+      case "video":
+        return (
+          <VideoPlayerPage
+            onNavigate={handleNavigate}
+            courseId={selectedCourse?.id}
+            courseTitle={selectedCourse?.title}
+            videoUrl={selectedCourse?.videoUrl}
+          />
+        );
       default:
-        return <HomePage onNavigate={setCurrentPage} />;
+        return <HomePage onNavigate={handleNavigate} />;
     }
   };
 
-  // Admin page has its own layout
-  if (currentPage === "admin") {
-    return <AdminPage />;
+  // Admin and Video pages have their own layout
+  if (currentPage === "admin" || currentPage === "video") {
+    return renderPage();
   }
 
   return (
     <div className="flex min-h-screen bg-background">
-      <Sidebar currentPage={currentPage} onNavigate={setCurrentPage} />
+      <Sidebar currentPage={currentPage} onNavigate={handleNavigate} />
       <main className="flex-1 ml-64">
         <Header title={config.title} subtitle={config.subtitle} />
         <div className="p-6">{renderPage()}</div>
