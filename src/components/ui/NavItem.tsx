@@ -5,7 +5,7 @@ interface NavItemProps {
   icon: LucideIcon;
   label: string;
   active?: boolean;
-  badge?: number;
+  badge?: number | string;
   onClick?: () => void;
 }
 
@@ -22,7 +22,7 @@ export function NavItem({ icon: Icon, label, active, badge, onClick }: NavItemPr
     >
       <Icon className="h-5 w-5" />
       <span className="font-medium flex-1">{label}</span>
-      {badge !== undefined && badge > 0 && (
+      {badge !== undefined && (
         <span
           className={cn(
             "px-2 py-0.5 rounded-full text-xs font-bold",
