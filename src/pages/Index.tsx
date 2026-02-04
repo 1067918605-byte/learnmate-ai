@@ -37,6 +37,7 @@ const Index = () => {
 
   const supabaseConfig = getSupabaseConfigStatus();
   if (!supabaseConfig.ok) {
+    const missingKeys = (supabaseConfig as { ok: false; missing: string[] }).missing;
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <Card className="max-w-2xl w-full p-6 space-y-3">
@@ -45,7 +46,7 @@ const Index = () => {
             你需要在项目根目录创建 <code className="font-mono">.env.local</code> 并设置以下环境变量：
           </p>
           <ul className="text-sm font-mono bg-muted rounded-lg p-3 space-y-1">
-            {supabaseConfig.missing.map((k) => (
+            {missingKeys.map((k) => (
               <li key={k}>{k}=...</li>
             ))}
           </ul>

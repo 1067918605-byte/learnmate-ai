@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { getSupabaseClient } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+
+const supabase = getSupabaseClient();
 
 interface UploadProgress {
   loaded: number;
