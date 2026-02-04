@@ -11,6 +11,8 @@ import {
   Settings,
   LogOut,
   GraduationCap,
+  Gamepad2,
+  Library,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -20,7 +22,9 @@ interface SidebarProps {
 
 const navItems = [
   { id: "home", label: "首页", icon: Home },
-  { id: "courses", label: "课程学习", icon: BookOpen },
+  { id: "textbook", label: "课本学习", icon: Library },
+  { id: "courses", label: "视频课程", icon: BookOpen },
+  { id: "games", label: "学习游戏", icon: Gamepad2, badge: "新" },
   { id: "exams", label: "模拟考试", icon: FileText },
   { id: "mistakes", label: "错题本", icon: RotateCcw, badge: 12 },
   { id: "ai", label: "AI助教", icon: MessageCircle },

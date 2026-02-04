@@ -9,6 +9,8 @@ import { AIPage } from "@/pages/AIPage";
 import { AdminPage } from "@/pages/AdminPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { VideoPlayerPage } from "@/pages/VideoPlayerPage";
+import { GamesPage } from "@/pages/GamesPage";
+import { TextbookPage } from "@/pages/TextbookPage";
 import {
   getSupabaseClient,
   getSupabaseConfigStatus,
@@ -19,7 +21,9 @@ import { Card } from "@/components/ui/card";
 
 const pageConfig: Record<string, { title: string; subtitle?: string }> = {
   home: { title: "首页", subtitle: "欢迎回来，小明！" },
-  courses: { title: "课程学习", subtitle: "选择你想学习的课程" },
+  textbook: { title: "课本学习", subtitle: "跟着教材一章一章学" },
+  courses: { title: "视频课程", subtitle: "选择你想学习的课程" },
+  games: { title: "学习游戏", subtitle: "边玩边学，快乐成长" },
   exams: { title: "模拟考试", subtitle: "检验你的学习成果" },
   mistakes: { title: "错题本", subtitle: "复习巩固薄弱知识点" },
   ai: { title: "AI智能助教", subtitle: "随时解答你的学习问题" },
@@ -101,8 +105,12 @@ const Index = () => {
     switch (currentPage) {
       case "home":
         return <HomePage onNavigate={handleNavigate} />;
+      case "textbook":
+        return <TextbookPage onNavigate={handleNavigate} />;
       case "courses":
         return <CoursesPage onNavigate={handleNavigate} />;
+      case "games":
+        return <GamesPage onNavigate={handleNavigate} />;
       case "exams":
         return <ExamsPage onNavigate={handleNavigate} />;
       case "mistakes":
