@@ -17,22 +17,27 @@ export async function isAdmin(): Promise<boolean> {
   const user = await getSessionUser();
   if (!user) return false;
 
-  // Expected schema:
-  // user_roles(user_id uuid primary key, role text)
   const supabase = getSupabaseClient();
   if (!supabase) return false;
 
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  try {
+    // Query the user_roles table - if it doesn't exist yet, catch the error
+    const { data, error } = await supabase
+      .from("user_roles" as any)
+      .select("role")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-  if (error) {
-    // If the table/policies aren't set up yet, treat as not admin.
+    if (error) {
+      // If the table/policies aren't set up yet, treat as not admin.
+      console.warn("user_roles table not available:", error.message);
+      return false;
+    }
+
+    return (data as any)?.role === "admin";
+  } catch (e) {
+    console.warn("Error checking admin status:", e);
     return false;
   }
-
-  return data?.role === "admin";
 }
 
