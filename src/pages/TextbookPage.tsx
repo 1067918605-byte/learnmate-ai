@@ -230,7 +230,7 @@ export function TextbookPage({ onNavigate }: TextbookPageProps) {
   const overallProgress = Math.round((completedLessons / totalLessons) * 100);
 
   return (
-    <div className="flex gap-4 h-[calc(100vh-140px)]">
+    <div className="flex flex-col lg:flex-row gap-4 h-auto lg:h-[calc(100vh-140px)] pb-20 md:pb-0">
       {/* AI Study Companion - Left Side */}
       <AnimatePresence>
         {showAICompanion && (
@@ -238,7 +238,7 @@ export function TextbookPage({ onNavigate }: TextbookPageProps) {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
-            className="w-80 shrink-0"
+            className="w-full lg:w-80 shrink-0"
           >
             <AIStudyCompanion
               subject={currentSubject?.label}
@@ -267,9 +267,9 @@ export function TextbookPage({ onNavigate }: TextbookPageProps) {
           </div>
 
           {/* Grade & Subject Selection */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 overflow-x-auto">
             <Tabs value={selectedGrade} onValueChange={setSelectedGrade}>
-              <TabsList className="bg-muted h-9">
+              <TabsList className="bg-muted h-9 w-full sm:w-auto overflow-x-auto justify-start">
                 {grades.map((grade) => (
                   <TabsTrigger
                     key={grade.id}
@@ -283,7 +283,7 @@ export function TextbookPage({ onNavigate }: TextbookPageProps) {
             </Tabs>
 
             <Tabs value={selectedSubject} onValueChange={setSelectedSubject}>
-              <TabsList className="bg-muted h-9">
+              <TabsList className="bg-muted h-9 w-full sm:w-auto">
                 {subjects.map((subject) => (
                   <TabsTrigger
                     key={subject.id}

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+ import { MobileHeader } from "@/components/layout/MobileHeader";
+ import { MobileNav } from "@/components/layout/MobileNav";
+ import { useIsMobile } from "@/hooks/use-mobile";
 import { HomePage } from "@/pages/HomePage";
 import { CoursesPage } from "@/pages/CoursesPage";
 import { ExamsPage } from "@/pages/ExamsPage";
@@ -38,6 +41,7 @@ const Index = () => {
     videoUrl?: string;
   } | null>(null);
   const { toast } = useToast();
+   const isMobile = useIsMobile();
 
   const supabaseConfig = getSupabaseConfigStatus();
   if (!supabaseConfig.ok) {
@@ -140,6 +144,24 @@ const Index = () => {
     return renderPage();
   }
 
+   // Mobile layout
+   if (isMobile) {
+     return (
+       <div className="flex flex-col min-h-screen bg-background">
+         <MobileHeader 
+           title={config.title} 
+           currentPage={currentPage}
+           onNavigate={handleNavigate}
+         />
+         <main className="flex-1 overflow-auto">
+           <div className="p-4">{renderPage()}</div>
+         </main>
+         <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
+       </div>
+     );
+   }
+ 
+   // Desktop/Tablet layout
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar currentPage={currentPage} onNavigate={handleNavigate} />
