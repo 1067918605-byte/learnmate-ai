@@ -183,7 +183,7 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
           <Zap className="h-5 w-5 text-amber-500" />
           每日挑战
         </h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {dailyChallenges.map((challenge, index) => (
             <motion.div
               key={challenge.id}
@@ -222,7 +222,7 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
 
       {/* Game Categories */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList className="bg-muted p-1 h-auto flex-wrap gap-1">
+        <TabsList className="bg-muted p-1 h-auto flex-wrap gap-1 w-full justify-start">
           {gameCategories.map((cat) => (
             <TabsTrigger
               key={cat.id}
@@ -236,7 +236,7 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
         </TabsList>
 
         <TabsContent value={activeCategory} className="mt-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {filteredGames.map((game, index) => (
               <motion.div
                 key={game.id}
@@ -320,10 +320,11 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
+        className="pb-20 md:pb-0"
       >
         <Card className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border-amber-200/50 dark:border-amber-800/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
                 <Trophy className="h-7 w-7 text-white" />
               </div>
@@ -334,7 +335,7 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               <div className="text-right">
                 <p className="text-2xl font-bold text-foreground">Lv.8</p>
                 <p className="text-xs text-muted-foreground">距离下一级还需 320 积分</p>

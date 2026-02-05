@@ -86,7 +86,7 @@ export function CoursesPage({ onNavigate }: CoursesPageProps) {
     <div className="space-y-6">
       {/* Subject Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-muted p-1 h-auto flex-wrap gap-1">
+        <TabsList className="bg-muted p-1 h-auto flex-wrap gap-1 w-full justify-start overflow-x-auto">
           {subjects.map((subject) => (
             <TabsTrigger
               key={subject.id}
@@ -103,7 +103,7 @@ export function CoursesPage({ onNavigate }: CoursesPageProps) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="grid grid-cols-3 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-20 md:pb-0"
           >
             {filteredCourses.map((course, index) => (
               <motion.div

@@ -116,9 +116,9 @@ export function ExamsPage({ onNavigate }: ExamsPageProps) {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 pb-20 md:pb-0">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Clock className="h-5 w-5 text-muted-foreground" />
           <span className="font-medium">剩余时间: 25:00</span>
@@ -127,7 +127,7 @@ export function ExamsPage({ onNavigate }: ExamsPageProps) {
           <span className="text-sm text-muted-foreground">
             第 {currentQuestion + 1} / {mockQuestions.length} 题
           </span>
-          <Progress value={progress} className="w-32" />
+          <Progress value={progress} className="w-24 sm:w-32" />
         </div>
       </div>
 

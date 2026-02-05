@@ -157,7 +157,7 @@ export function AIPage({ onNavigate }: AIPageProps) {
   };
 
   return (
-    <div className="h-[calc(100vh-120px)] flex flex-col">
+    <div className="h-[calc(100vh-180px)] md:h-[calc(100vh-120px)] flex flex-col pb-20 md:pb-0">
       {/* Messages */}
       <ScrollArea className="flex-1 px-4" ref={scrollRef}>
         <div className="max-w-3xl mx-auto py-6 space-y-6">
@@ -225,19 +225,19 @@ export function AIPage({ onNavigate }: AIPageProps) {
 
       {/* Suggested Questions */}
       {messages.length === 1 && (
-        <div className="px-4 pb-4">
+        <div className="px-2 sm:px-4 pb-4">
           <div className="max-w-3xl mx-auto">
             <p className="text-sm text-muted-foreground mb-3 flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
               试试这些问题：
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 overflow-x-auto">
               {suggestedQuestions.map((q) => (
                 <Button
                   key={q}
                   variant="outline"
                   size="sm"
-                  className="rounded-full"
+                  className="rounded-full shrink-0 text-xs sm:text-sm"
                   onClick={() => sendMessage(q)}
                 >
                   {q}

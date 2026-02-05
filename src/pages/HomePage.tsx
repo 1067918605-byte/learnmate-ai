@@ -92,8 +92,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
         </div>
       </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-4 gap-4">
+       {/* Stats Grid */}
+       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
@@ -112,15 +112,15 @@ export function HomePage({ onNavigate }: HomePageProps) {
         ))}
       </div>
 
-      {/* Grade Selection */}
-      <div>
+       {/* Grade Selection */}
+       <div className="pb-2">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-foreground">选择年级</h3>
           <Button variant="ghost" className="text-primary">
             查看全部 <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <GradeCard
             title="小学"
             subtitle="1-6年级课程"
@@ -156,7 +156,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             查看全部 <ChevronRight className="ml-1 h-4 w-4" />
           </Button>
         </div>
-        <div className="grid grid-cols-3 gap-4">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 md:pb-0">
           {recentCourses.map((course) => (
             <CourseCard
               key={course.id}

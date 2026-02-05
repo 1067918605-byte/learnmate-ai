@@ -74,9 +74,9 @@ export function MistakesPage({ onNavigate }: MistakesPageProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20 md:pb-0">
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="bg-card rounded-2xl p-5 border border-border shadow-card">
           <div className="flex items-center gap-3 mb-2">
             <div className="h-10 w-10 rounded-xl bg-destructive/10 flex items-center justify-center">

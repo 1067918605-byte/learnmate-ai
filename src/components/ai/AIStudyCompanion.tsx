@@ -180,7 +180,7 @@ export function AIStudyCompanion({ subject, onClose }: AIStudyCompanionProps) {
   ];
 
   return (
-    <Card className="h-full flex flex-col bg-gradient-to-b from-card to-card/95 border-primary/20">
+    <Card className="h-80 lg:h-full flex flex-col bg-gradient-to-b from-card to-card/95 border-primary/20">
       {/* Header with Avatar */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-3">
