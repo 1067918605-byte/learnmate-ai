@@ -62,6 +62,126 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_challenges: {
+        Row: {
+          challenge_id: string
+          completed_date: string
+          id: string
+          points_earned: number | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_date?: string
+          id?: string
+          points_earned?: number | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_date?: string
+          id?: string
+          points_earned?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      game_scores: {
+        Row: {
+          correct_count: number | null
+          created_at: string
+          duration_seconds: number | null
+          game_id: string
+          id: string
+          score: number
+          total_count: number | null
+          user_id: string
+        }
+        Insert: {
+          correct_count?: number | null
+          created_at?: string
+          duration_seconds?: number | null
+          game_id: string
+          id?: string
+          score?: number
+          total_count?: number | null
+          user_id: string
+        }
+        Update: {
+          correct_count?: number | null
+          created_at?: string
+          duration_seconds?: number | null
+          game_id?: string
+          id?: string
+          score?: number
+          total_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          grade: string | null
+          id: string
+          last_login_date: string | null
+          level: number | null
+          points: number | null
+          streak_days: number | null
+          updated_at: string
+          user_id: string
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          grade?: string | null
+          id?: string
+          last_login_date?: string | null
+          level?: number | null
+          points?: number | null
+          streak_days?: number | null
+          updated_at?: string
+          user_id: string
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          grade?: string | null
+          id?: string
+          last_login_date?: string | null
+          level?: number | null
+          points?: number | null
+          streak_days?: number | null
+          updated_at?: string
+          user_id?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

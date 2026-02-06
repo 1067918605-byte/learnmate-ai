@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
- import { MobileHeader } from "@/components/layout/MobileHeader";
- import { MobileNav } from "@/components/layout/MobileNav";
- import { useIsMobile } from "@/hooks/use-mobile";
+import { MobileHeader } from "@/components/layout/MobileHeader";
+import { MobileNav } from "@/components/layout/MobileNav";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { HomePage } from "@/pages/HomePage";
 import { CoursesPage } from "@/pages/CoursesPage";
 import { ExamsPage } from "@/pages/ExamsPage";
@@ -14,16 +14,19 @@ import { SettingsPage } from "@/pages/SettingsPage";
 import { VideoPlayerPage } from "@/pages/VideoPlayerPage";
 import { GamesPage } from "@/pages/GamesPage";
 import { TextbookPage } from "@/pages/TextbookPage";
+import { AuthPage } from "@/pages/AuthPage";
 import {
   getSupabaseClient,
   getSupabaseConfigStatus,
 } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { isAdmin } from "@/lib/authz";
 import { Card } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 const pageConfig: Record<string, { title: string; subtitle?: string }> = {
-  home: { title: "首页", subtitle: "欢迎回来，小明！" },
+  home: { title: "首页", subtitle: "欢迎回来！" },
   textbook: { title: "课本学习", subtitle: "跟着教材一章一章学" },
   courses: { title: "视频课程", subtitle: "选择你想学习的课程" },
   games: { title: "学习游戏", subtitle: "边玩边学，快乐成长" },
@@ -41,9 +44,23 @@ const Index = () => {
     videoUrl?: string;
   } | null>(null);
   const { toast } = useToast();
-   const isMobile = useIsMobile();
+  const isMobile = useIsMobile();
+  const { isAuthenticated, loading, user } = useAuth();
 
   const supabaseConfig = getSupabaseConfigStatus();
+  
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">加载中...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!supabaseConfig.ok) {
     const missingKeys = (supabaseConfig as { ok: false; missing: string[] }).missing;
     return (
@@ -64,6 +81,11 @@ const Index = () => {
         </Card>
       </div>
     );
+  }
+
+  // Show auth page if not authenticated
+  if (!isAuthenticated) {
+    return <AuthPage onAuthSuccess={() => setCurrentPage("home")} />;
   }
 
   const config = pageConfig[currentPage] || pageConfig.home;
@@ -144,24 +166,24 @@ const Index = () => {
     return renderPage();
   }
 
-   // Mobile layout
-   if (isMobile) {
-     return (
-       <div className="flex flex-col min-h-screen bg-background">
-         <MobileHeader 
-           title={config.title} 
-           currentPage={currentPage}
-           onNavigate={handleNavigate}
-         />
-         <main className="flex-1 overflow-auto">
-           <div className="p-4">{renderPage()}</div>
-         </main>
-         <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
-       </div>
-     );
-   }
- 
-   // Desktop/Tablet layout
+  // Mobile layout
+  if (isMobile) {
+    return (
+      <div className="flex flex-col min-h-screen bg-background">
+        <MobileHeader 
+          title={config.title} 
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+        />
+        <main className="flex-1 overflow-auto">
+          <div className="p-4">{renderPage()}</div>
+        </main>
+        <MobileNav currentPage={currentPage} onNavigate={handleNavigate} />
+      </div>
+    );
+  }
+
+  // Desktop/Tablet layout
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar currentPage={currentPage} onNavigate={handleNavigate} />

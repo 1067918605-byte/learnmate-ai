@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MathGame } from "@/components/games/MathGame";
+import { IdiomGame } from "@/components/games/IdiomGame";
+import { WordGame } from "@/components/games/WordGame";
+import { useAuth } from "@/hooks/useAuth";
+import { getSupabaseClient } from "@/integrations/supabase/client";
 import {
   Gamepad2,
   Brain,
   Calculator,
   Languages,
-  Puzzle,
   Trophy,
   Star,
   Zap,
@@ -19,11 +23,14 @@ import {
   Play,
   Lock,
   Sparkles,
+  CheckCircle,
 } from "lucide-react";
 
 interface GamesPageProps {
   onNavigate: (page: string, data?: any) => void;
 }
+
+type ActiveGame = "math" | "idiom" | "word" | null;
 
 const gameCategories = [
   { id: "all", label: "全部", icon: Gamepad2 },
@@ -35,7 +42,7 @@ const gameCategories = [
 
 const games = [
   {
-    id: 1,
+    id: "math",
     title: "口算大冒险",
     description: "限时口算挑战，提升计算速度",
     category: "math",
@@ -48,7 +55,7 @@ const games = [
     color: "from-blue-500 to-cyan-500",
   },
   {
-    id: 2,
+    id: "idiom",
     title: "成语接龙王",
     description: "趣味成语接龙，积累成语词汇",
     category: "chinese",
@@ -61,7 +68,7 @@ const games = [
     color: "from-amber-500 to-orange-500",
   },
   {
-    id: 3,
+    id: "word",
     title: "单词消消乐",
     description: "记忆单词拼写，趣味闯关模式",
     category: "english",
@@ -74,7 +81,7 @@ const games = [
     color: "from-green-500 to-emerald-500",
   },
   {
-    id: 4,
+    id: "logic",
     title: "逻辑推理站",
     description: "培养逻辑思维能力的益智游戏",
     category: "logic",
@@ -82,12 +89,12 @@ const games = [
     players: "567",
     duration: "15分钟",
     stars: 4.6,
-    unlocked: true,
+    unlocked: false,
     thumbnail: "🧩",
     color: "from-purple-500 to-pink-500",
   },
   {
-    id: 5,
+    id: "fraction",
     title: "分数大作战",
     description: "通过游戏掌握分数加减乘除",
     category: "math",
@@ -100,7 +107,7 @@ const games = [
     color: "from-indigo-500 to-blue-500",
   },
   {
-    id: 6,
+    id: "poetry",
     title: "诗词飞花令",
     description: "古诗词知识竞赛，挑战诗词储备",
     category: "chinese",
@@ -112,47 +119,108 @@ const games = [
     thumbnail: "🏮",
     color: "from-red-500 to-rose-500",
   },
-  {
-    id: 7,
-    title: "听力大挑战",
-    description: "英语听力训练，提升听力水平",
-    category: "english",
-    difficulty: "中等",
-    players: "654",
-    duration: "10分钟",
-    stars: 4.4,
-    unlocked: true,
-    thumbnail: "🎧",
-    color: "from-teal-500 to-cyan-500",
-  },
-  {
-    id: 8,
-    title: "数独乐园",
-    description: "经典数独游戏，锻炼思维能力",
-    category: "logic",
-    difficulty: "中等",
-    players: "1089",
-    duration: "20分钟",
-    stars: 4.9,
-    unlocked: true,
-    thumbnail: "🔢",
-    color: "from-violet-500 to-purple-500",
-  },
 ];
 
-const dailyChallenges = [
-  { id: 1, title: "每日口算", reward: 50, completed: false, icon: "🎯" },
-  { id: 2, title: "成语接龙", reward: 30, completed: true, icon: "📖" },
-  { id: 3, title: "单词记忆", reward: 40, completed: false, icon: "🔤" },
-];
+interface DailyChallenge {
+  id: string;
+  title: string;
+  reward: number;
+  completed: boolean;
+  icon: string;
+}
 
 export function GamesPage({ onNavigate }: GamesPageProps) {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [activeGame, setActiveGame] = useState<ActiveGame>(null);
+  const [dailyChallenges, setDailyChallenges] = useState<DailyChallenge[]>([
+    { id: "daily-math", title: "每日口算", reward: 50, completed: false, icon: "🎯" },
+    { id: "daily-idiom", title: "成语接龙", reward: 30, completed: false, icon: "📖" },
+    { id: "daily-word", title: "单词记忆", reward: 40, completed: false, icon: "🔤" },
+  ]);
+  const [userStats, setUserStats] = useState({ points: 0, level: 1, achievements: 0 });
+  const { user } = useAuth();
+
+  useEffect(() => {
+    loadUserStats();
+    loadDailyChallenges();
+  }, [user]);
+
+  const loadUserStats = async () => {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
+
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("points, level")
+        .eq("user_id", user.id)
+        .maybeSingle() as any;
+
+      if (profile) {
+        setUserStats({
+          points: profile.points || 0,
+          level: profile.level || 1,
+          achievements: 12, // Mock for now
+        });
+      }
+    } catch (error) {
+      console.error("Error loading user stats:", error);
+    }
+  };
+
+  const loadDailyChallenges = async () => {
+    const supabase = getSupabaseClient();
+    if (!supabase || !user) return;
+
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const { data } = await supabase
+        .from("daily_challenges")
+        .select("challenge_id")
+        .eq("user_id", user.id)
+        .eq("completed_date", today) as any;
+
+      if (data) {
+        const completedIds = data.map((d: any) => d.challenge_id);
+        setDailyChallenges(prev => 
+          prev.map(c => ({
+            ...c,
+            completed: completedIds.includes(c.id)
+          }))
+        );
+      }
+    } catch (error) {
+      console.error("Error loading daily challenges:", error);
+    }
+  };
 
   const filteredGames =
     activeCategory === "all"
       ? games
       : games.filter((g) => g.category === activeCategory);
+
+  const handlePlayGame = (gameId: string) => {
+    if (gameId === "math" || gameId === "idiom" || gameId === "word") {
+      setActiveGame(gameId);
+    }
+  };
+
+  const handleBackFromGame = () => {
+    setActiveGame(null);
+    loadUserStats(); // Refresh stats after playing
+    loadDailyChallenges();
+  };
+
+  // Render active game
+  if (activeGame === "math") {
+    return <MathGame onBack={handleBackFromGame} />;
+  }
+  if (activeGame === "idiom") {
+    return <IdiomGame onBack={handleBackFromGame} />;
+  }
+  if (activeGame === "word") {
+    return <WordGame onBack={handleBackFromGame} />;
+  }
 
   return (
     <div className="space-y-6">
@@ -197,11 +265,18 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
                     ? "bg-muted/50 border-green-500/30"
                     : "hover:border-primary/50"
                 }`}
+                onClick={() => {
+                  if (!challenge.completed) {
+                    const gameId = challenge.id.replace("daily-", "");
+                    handlePlayGame(gameId);
+                  }
+                }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-2xl">{challenge.icon}</span>
                   {challenge.completed ? (
                     <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+                      <CheckCircle className="h-3 w-3 mr-1" />
                       已完成
                     </Badge>
                   ) : (
@@ -222,7 +297,7 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
 
       {/* Game Categories */}
       <Tabs value={activeCategory} onValueChange={setActiveCategory}>
-        <TabsList className="bg-muted p-1 h-auto flex-wrap gap-1 w-full justify-start">
+        <TabsList className="bg-muted p-1 h-auto flex-wrap gap-1 w-full justify-start overflow-x-auto">
           {gameCategories.map((cat) => (
             <TabsTrigger
               key={cat.id}
@@ -248,6 +323,7 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
                   className={`overflow-hidden cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1 ${
                     !game.unlocked ? "opacity-70" : ""
                   }`}
+                  onClick={() => game.unlocked && handlePlayGame(game.id)}
                 >
                   {/* Thumbnail */}
                   <div
@@ -331,13 +407,13 @@ export function GamesPage({ onNavigate }: GamesPageProps) {
               <div>
                 <h3 className="font-bold text-foreground text-lg">成就系统</h3>
                 <p className="text-sm text-muted-foreground">
-                  已解锁 12/50 个成就 · 获得 2,450 积分
+                  已解锁 {userStats.achievements}/50 个成就 · 获得 {userStats.points.toLocaleString()} 积分
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               <div className="text-right">
-                <p className="text-2xl font-bold text-foreground">Lv.8</p>
+                <p className="text-2xl font-bold text-foreground">Lv.{userStats.level}</p>
                 <p className="text-xs text-muted-foreground">距离下一级还需 320 积分</p>
               </div>
               <Button variant="outline">查看成就</Button>
