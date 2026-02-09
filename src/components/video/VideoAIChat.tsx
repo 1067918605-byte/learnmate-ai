@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import ReactMarkdown from "react-markdown";
+import { getSupabaseClient } from "@/integrations/supabase/client";
 import {
   Send,
   Mic,
@@ -52,6 +53,17 @@ export function VideoAIChat({ isOpen, onClose, courseTitle }: VideoAIChatProps) 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
 
+    const supabase = getSupabaseClient();
+    const session = supabase ? (await supabase.auth.getSession()).data.session : null;
+
+    if (!session?.access_token) {
+      setMessages((prev) => [
+        ...prev,
+        { id: Date.now().toString(), role: "assistant" as const, content: "请先登录后再使用AI助教功能。" },
+      ]);
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -69,7 +81,8 @@ export function VideoAIChat({ isOpen, onClose, courseTitle }: VideoAIChatProps) 
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({
             messages: [...messages, userMessage].map((m) => ({
